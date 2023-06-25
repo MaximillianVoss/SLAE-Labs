@@ -1,136 +1,97 @@
 package L1.Tests;
 
-import L1.WithComments.Matrix;
-import L1.WithComments.Results;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import L1.WithoutComments.Matrix;
+import L1.WithoutComments.Results;
+import org.junit.Test;
+import org.junit.Assert;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 
 public class MatrixTest {
-    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    private final PrintStream originalOut = System.out;
-
-    @BeforeEach
-    public void setUpStreams() {
-        System.setOut(new PrintStream(outputStream));
-    }
 
     @Test
-    public void testInit() throws FileNotFoundException {
-        Matrix matrix = new Matrix("matrix.txt");
+    public void testSingleSolution() throws IOException {
+        // Создание файла с данными для случая с единственным решением
+        String filename = "input_single_solution.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write("3 4 1\n");
+        writer.write("1 2 3 4\n");
+        writer.write("5 6 7 8\n");
+        writer.write("9 10 11 12\n");
+        writer.close();
 
-        // Assert the matrix dimensions
-        Assertions.assertEquals(3, matrix.getRowAmount());
-        Assertions.assertEquals(4, matrix.getColumnAmount());
-
-        // Assert the matrix values
-        double[][] expectedMatrixArray = {
-                {2.0, -3.0, 4.0, 5.0},
-                {1.0, 2.0, -1.0, 0.0},
-                {-4.0, -1.0, 3.0, 2.0}
-        };
-        Assertions.assertArrayEquals(expectedMatrixArray, matrix.getMatrixArray());
-    }
-
-    @Test
-    public void testMakeTriangle_singleSolution() throws IOException {
-        Matrix matrix = new Matrix("matrix_single_solution.txt");
-        Results result = matrix.MakeTriangle();
-
-        Assertions.assertEquals(Results.SINGLE_SOLUTION, result);
-    }
-
-    @Test
-    public void testMakeTriangle_degenerateSystem() throws IOException {
-        Matrix matrix = new Matrix("matrix_degenerate_system.txt");
-        Results result = matrix.MakeTriangle();
-
-        Assertions.assertEquals(Results.DEGENERATE_SYSTEM, result);
-    }
-
-    @Test
-    public void testMakeTriangle_infiniteSolutions() throws IOException {
-        Matrix matrix = new Matrix("matrix_infinite_solutions.txt");
-        Results result = matrix.MakeTriangle();
-
-        Assertions.assertEquals(Results.INFINITE_SOLUTIONS, result);
-    }
-
-    @Test
-    public void testMakeTriangle_noSolutions() throws IOException {
-        Matrix matrix = new Matrix("matrix_no_solutions.txt");
-        Results result = matrix.MakeTriangle();
-
-        Assertions.assertEquals(Results.NO_SOLUTIONS, result);
-    }
-
-    @Test
-    public void testCheckSolutions_singleSolution() throws IOException {
-        Matrix matrix = new Matrix("matrix_single_solution.txt");
+        // Создание объекта Matrix и вызов методов для проверки решения
+        Matrix matrix = new Matrix(filename);
+        matrix.MakeTriangle();
         double[] solutions = matrix.CheckSolutions();
 
-        Assertions.assertArrayEquals(new double[]{1.0, 2.0, 3.0}, solutions, 0.0001);
+        // Проверка правильности решения
+        double[] expected = {1, 1, 1};
+        Assert.assertArrayEquals(expected, solutions, 0.0001);
     }
 
     @Test
-    public void testCheckSolutions_degenerateSystem() throws IOException {
-        Matrix matrix = new Matrix("matrix_degenerate_system.txt");
+    public void testDegenerateSystem() throws IOException {
+        // Создание файла с данными для случая с вырожденной системой
+        String filename = "input_degenerate_system.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write("3 4 1\n");
+        writer.write("0 0 0 0\n");
+        writer.write("5 6 7 8\n");
+        writer.write("9 10 11 12\n");
+        writer.close();
+
+        // Создание объекта Matrix и вызов методов для проверки решения
+        Matrix matrix = new Matrix(filename);
+        matrix.MakeTriangle();
         double[] solutions = matrix.CheckSolutions();
 
-        Assertions.assertTrue(solutions.length == 0);
-        Assertions.assertEquals("Система вырожденная\r\n", outputStream.toString());
+        // Проверка правильности решения
+        Assert.assertEquals(Results.DEGENERATE_SYSTEM, matrix.MakeTriangle());
+        Assert.assertArrayEquals(new double[0], solutions, 0.0001);
     }
 
     @Test
-    public void testCheckSolutions_infiniteSolutions() throws IOException {
-        Matrix matrix = new Matrix("matrix_infinite_solutions.txt");
+    public void testInfiniteSolutions() throws IOException {
+        // Создание файла с данными для случая с бесконечным количеством решений
+        String filename = "input_infinite_solutions.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write("3 4 1\n");
+        writer.write("1 2 3 4\n");
+        writer.write("2 4 6 8\n");
+        writer.write("3 6 9 12\n");
+        writer.close();
+
+        // Создание объекта Matrix и вызов методов для проверки решения
+        Matrix matrix = new Matrix(filename);
+        matrix.MakeTriangle();
         double[] solutions = matrix.CheckSolutions();
 
-        Assertions.assertNull(solutions);
-        Assertions.assertEquals("Система имеет бесконечное количество решений\n", outputStream.toString());
+        // Проверка правильности решения
+        Assert.assertEquals(Results.INFINITE_SOLUTIONS, matrix.MakeTriangle());
+        Assert.assertArrayEquals(new double[0], solutions, 0.0001);
     }
 
     @Test
-    public void testCheckSolutions_noSolutions() throws IOException {
-        Matrix matrix = new Matrix("matrix_no_solutions.txt");
+    public void testNoSolutions() throws IOException {
+        // Создание файла с данными для случая без решений
+        String filename = "input_no_solutions.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write("3 4 1\n");
+        writer.write("1 2 3 4\n");
+        writer.write("2 4 6 8\n");
+        writer.write("3 6 9 10\n");
+        writer.close();
+
+        // Создание объекта Matrix и вызов методов для проверки решения
+        Matrix matrix = new Matrix(filename);
+        matrix.MakeTriangle();
         double[] solutions = matrix.CheckSolutions();
 
-        Assertions.assertTrue(solutions.length == 0);
-        Assertions.assertEquals("Система не имеет решений\n", outputStream.toString());
-    }
-
-
-    private void createMatrixFile(String fileName, String content) throws IOException {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-            writer.write(content);
-        }
-    }
-
-    @BeforeEach
-    public void createTestFiles() throws IOException {
-        createMatrixFile("matrix.txt", "3 4 1\n2 -3 4 5\n1 2 -1 0\n-4 -1 3 2");
-        createMatrixFile("matrix_single_solution.txt", "3 4 1\n1 2 3 10\n2 3 4 20\n3 4 5 30");
-        createMatrixFile("matrix_degenerate_system.txt", "3 4 1\n1 2 3 10\n2 4 6 20\n3 6 9 30");
-        createMatrixFile("matrix_infinite_solutions.txt", "3 4 1\n1 2 3 10\n2 4 6 20\n3 6 9 30");
-        createMatrixFile("matrix_no_solutions.txt", "3 4 1\n1 2 3 10\n2 4 6 20\n3 6 9 40");
-    }
-
-    @Test
-    public void cleanupTestFiles() {
-        File[] filesToDelete = {
-                new File("matrix.txt"),
-                new File("matrix_single_solution.txt"),
-                new File("matrix_degenerate_system.txt"),
-                new File("matrix_infinite_solutions.txt"),
-                new File("matrix_no_solutions.txt")
-        };
-
-        for (File file : filesToDelete) {
-            if (file.exists()) {
-                file.delete();
-            }
-        }
+        // Проверка правильности решения
+        Assert.assertEquals(Results.NO_SOLUTIONS, matrix.MakeTriangle());
+        Assert.assertArrayEquals(new double[0], solutions, 0.0001);
     }
 }

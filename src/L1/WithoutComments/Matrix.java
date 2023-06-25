@@ -63,6 +63,7 @@ public class Matrix {
             if (iteration >= rowAmount) {
                 break;
             }
+
             boolean swapResult = SwapFirstNotZeroLine(iteration);
             if (!swapResult) {
                 if (IsAllZeroRow(iteration)) {
@@ -75,20 +76,26 @@ public class Matrix {
                     return Results.DEGENERATE_SYSTEM;
                 }
             }
+
             if (Math.abs(matrixArray[iteration][iteration]) < this.epsilon) {
-                return Results.SINGLE_SOLUTION;
-            }
-            RecalculateCoefficients(iteration, iteration);
-            if (iteration == rowAmount - 1 && IsZeroElement(matrixArray[iteration][iteration])) {
-                if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                    return Results.INFINITE_SOLUTIONS;
+                // Проверка, если на последней итерации и последний диагональный элемент равен нулю,
+                if (iteration == rowAmount - 1 && IsZeroElement(matrixArray[iteration][iteration])) {
+                    if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
+                        return Results.INFINITE_SOLUTIONS;
+                    } else {
+                        return Results.NO_SOLUTIONS;
+                    }
                 } else {
-                    return Results.NO_SOLUTIONS;
+                    continue; // Пропускаем итерацию, если диагональный элемент равен нулю
                 }
             }
+
+            RecalculateCoefficients(iteration, iteration);
         }
         return Results.SINGLE_SOLUTION;
     }
+
+
 
     private void RecalculateCoefficients(int currentRow, int nextRow) {
         for (int i = currentRow + 1; i < rowAmount; i++) {

@@ -49,14 +49,15 @@ public class Matrix {
         scan.close();
     }
 
-    private boolean IsAllZeroRow(int lineNumber) {
+    public boolean IsAllZeroRow(int row) {
         for (int i = 0; i < columnAmount; i++) {
-            if (!IsZeroElement(matrixArray[lineNumber][i])) {
+            if (Math.abs(matrixArray[row][i]) > this.epsilon) {
                 return false;
             }
         }
         return true;
     }
+
 
     public Results MakeTriangle() {
         for (int iteration = 0; iteration < rowAmount; iteration++) {
@@ -66,14 +67,10 @@ public class Matrix {
 
             boolean swapResult = SwapFirstNotZeroLine(iteration);
             if (!swapResult) {
-                if (IsAllZeroRow(iteration)) {
-                    if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                        return Results.INFINITE_SOLUTIONS;
-                    } else {
-                        return Results.NO_SOLUTIONS;
-                    }
-                } else {
+                if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
                     return Results.DEGENERATE_SYSTEM;
+                } else {
+                    return Results.NO_SOLUTIONS;
                 }
             }
 

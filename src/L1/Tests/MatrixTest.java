@@ -17,20 +17,25 @@ public class MatrixTest {
         String filename = "input_single_solution.txt";
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
         writer.write("3 4 1\n");
-        writer.write("1 2 3 4\n");
-        writer.write("5 6 7 8\n");
-        writer.write("9 10 11 12\n");
+        writer.write("1 2 3 14\n");
+        writer.write("4 -5 6 32\n");
+        writer.write("7 8 -9 14\n");
         writer.close();
 
         // Создание объекта Matrix и вызов методов для проверки решения
         Matrix matrix = new Matrix(filename);
-        matrix.MakeTriangle();
-        double[] solutions = matrix.CheckSolutions();
+        Results result = matrix.MakeTriangle();
+        Assert.assertEquals(Results.SINGLE_SOLUTION, result);
 
-        // Проверка правильности решения
-        double[] expected = {1, 1, 1};
-        Assert.assertArrayEquals(expected, solutions, 0.0001);
+        if (result == Results.SINGLE_SOLUTION) {
+            double[] solutions = matrix.FindSolutions();
+            // Проверка правильности решения
+            double[] expected = {4.745762711864407, 0.6101694915254238, 2.6779661016949152};
+            ; // Здесь ожидаемый результат будет зависеть от ваших данных и метода решения
+            Assert.assertArrayEquals(expected, solutions, 0.0001);
+        }
     }
+
 
     @Test
     public void testDegenerateSystem() throws IOException {
@@ -82,7 +87,7 @@ public class MatrixTest {
         writer.write("3 4 1\n");
         writer.write("1 2 3 4\n");
         writer.write("2 4 6 8\n");
-        writer.write("3 6 9 10\n");
+        writer.write("3 6 9 12\n");
         writer.close();
 
         // Создание объекта Matrix и вызов методов для проверки решения

@@ -1,4 +1,4 @@
-package L1;
+package L1.WithComments;
 
 import java.io.FileNotFoundException;
 
@@ -40,16 +40,17 @@ class Main {
 
     public static void main(String[] args) {
         // Создаем объект mat типа Matrix
-        Matrix mat = new Matrix();
 
         try {
             // Загружаем матрицу из файла "src/Input.txt"
-            mat.Init("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L1\\input.txt");
+            Matrix mat = new Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L1\\input.txt");
+            System.out.println("Исходная матрица:");
             // Выводим матрицу на экран
             mat.Print();
             // Вызываем метод MakeTriangle для матрицы и сохраняем результат в переменную result
             Results result = mat.MakeTriangle();
             // Выводим матрицу на экран после преобразования
+            System.out.println("Матрица после преобразования:");
             mat.Print();
             // Выводим результат операции (текстовое сообщение) с помощью метода GetResult
             GetResult(result);

@@ -4,21 +4,26 @@ package L2;
 import java.io.FileNotFoundException;
 
 // Класс Main
-// Класс Main
 public class Main {
+
 
     public static void main(String[] args) {
         // Создание объекта матрицы
         try {
-            Matrix matrix = new Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L2\\input.txt");
+            L2.Matrix matrix = new L2.Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L2\\input2.txt");
+            System.out.println("Исходная матрица:");
             // Вывод исходной матрицы на экран
             matrix.Print();
             // Решение системы методом итераций
             double[] solution = matrix.SolveByIterations();
+
             // Проверка, есть ли решение
             if (solution == null) {
                 System.out.println("Система не имеет решений!");
             } else {
+                System.out.println("Последняя перестановка:");
+                matrix.PrintLastPermutation();
+                System.out.println("Результат:");
                 // Вывод результата на экран
                 printArray(solution);
             }
@@ -28,12 +33,10 @@ public class Main {
     }
 
     public static void printArray(double[] array) {
-        // Вывод текста "Результат: "
-        System.out.print("Результат: ");
         // Цикл по элементам массива matrix
         for (double element : array) {
             // Вывод элемента массива на экран с форматированием
-            System.out.printf("%.2f ", element);
+            System.out.printf("%18.6E ", element);
         }
         // Вывод пустой строки
         System.out.println();

@@ -36,6 +36,67 @@ public class MatrixTest {
         }
     }
 
+    @Test
+    public void testSingleSolution2() throws IOException {
+        // Создание файла с данными для случая с единственным решением
+        String filename = "input_single_solution.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write("4 5 1\n");
+        writer.write("0 4 4 0 -5\n");
+        writer.write("5 5 0 0 8\n");
+        writer.write("0 2 2 9 9\n");
+        writer.write("4 0 0 4 0\n");
+        writer.close();
+
+        // Создание объекта Matrix и вызов методов для проверки решения
+        Matrix matrix = new Matrix(filename);
+        Results result = matrix.MakeTriangle();
+        Assert.assertEquals(Results.SINGLE_SOLUTION, result);
+
+        if (result == Results.SINGLE_SOLUTION) {
+            double[] solutions = matrix.FindSolutions();
+            // Проверка правильности решения
+            double[] expected = {
+                    -1.2777777777777781,
+                    2.877777777777778,
+                    -4.127777777777778,
+                    1.2777777777777777
+            };
+            ; // Здесь ожидаемый результат будет зависеть от ваших данных и метода решения
+            Assert.assertArrayEquals(expected, solutions, 0.0001);
+        }
+    }
+
+    @Test
+    public void testSingleSolution3() throws IOException {
+        // Создание файла с данными для случая с единственным решением
+        String filename = "input_single_solution.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write("4 5 1\n");
+        writer.write("0 4 4 0 -5\n");
+        writer.write("5 5 0 0 8\n");
+        writer.write("0 2 2 9 9\n");
+        writer.write("4 0 0 4 0\n");
+        writer.close();
+
+        // Создание объекта Matrix и вызов методов для проверки решения
+        L1.WithComments.Matrix matrix = new L1.WithComments.Matrix(filename);
+        L1.WithComments.Results result = matrix.MakeTriangle();
+        Assert.assertEquals(L1.WithComments.Results.SINGLE_SOLUTION, result);
+
+        if (result == L1.WithComments.Results.SINGLE_SOLUTION) {
+            double[] solutions = matrix.FindSolutions();
+            // Проверка правильности решения
+            double[] expected = {
+                    -1.2777777777777781,
+                    2.877777777777778,
+                    -4.127777777777778,
+                    1.2777777777777777
+            };
+            ; // Здесь ожидаемый результат будет зависеть от ваших данных и метода решения
+            Assert.assertArrayEquals(expected, solutions, 0.0001);
+        }
+    }
 
     @Test
     public void testDegenerateSystem() throws IOException {
@@ -87,16 +148,18 @@ public class MatrixTest {
         writer.write("3 4 1\n");
         writer.write("1 2 3 4\n");
         writer.write("2 4 6 8\n");
-        writer.write("3 6 9 12\n");
+        writer.write("3 6 9 15\n");
         writer.close();
 
         // Создание объекта Matrix и вызов методов для проверки решения
         Matrix matrix = new Matrix(filename);
-        matrix.MakeTriangle();
+        Results result = matrix.MakeTriangle(); // Сохранение результата в переменную
         double[] solutions = matrix.CheckSolutions();
 
         // Проверка правильности решения
-        Assert.assertEquals(Results.NO_SOLUTIONS, matrix.MakeTriangle());
+        Assert.assertEquals(Results.NO_SOLUTIONS, result); // Использование переменной здесь
         Assert.assertArrayEquals(new double[0], solutions, 0.0001);
     }
+
+
 }

@@ -1,216 +1,200 @@
 package L1.WithComments;
 
-import java.io.File;  // Импорт класса File из пакета java.io
-import java.io.FileNotFoundException;  // Импорт класса FileNotFoundException из пакета java.io
-import java.util.Scanner;  // Импорт класса Scanner из пакета java.util
-import java.util.regex.Pattern;  // Импорт класса Pattern из пакета java.util.regex
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
-public class Matrix {  // Объявление класса Matrix
+public class Matrix {
 
-    private double[][] matrixArray;  // Приватное поле для хранения элементов матрицы
-    private int rowAmount;  // Приватное поле для хранения количества строк в матрице
-    private int columnAmount;  // Приватное поле для хранения количества столбцов в матрице
-    private double epsilon;  // Приватное поле для хранения погрешности для проверки на равенство нулю
-    private static final int NotFounded = -1;  // Приватная константа для обозначения не найденного значения индекса
-    private double[] solution;  // Приватное поле для хранения решений системы уравнений
+    private double[][] matrixArray; // Массив для хранения матрицы
+    private int rowAmount; // Количество строк матрицы
+    private int columnAmount; // Количество столбцов матрицы
+    private double epsilon; // Погрешность
+    private static final int NotFounded = -1; // Константа для обозначения отсутствия значения
+    private double[] solution; // Массив для хранения решений системы
 
-    public Matrix(String fileName) throws FileNotFoundException {  // Конструктор класса, принимающий имя файла
-        this.Init(fileName);  // Вызов метода Init для инициализации матрицы из файла
+    public Matrix(String fileName) throws FileNotFoundException {
+        this.Init(fileName); // Инициализация объекта матрицы
     }
 
-    public void Print() {  // Метод для вывода матрицы на экран
+    public void Print() {
         for (int i = 0; i < rowAmount; i++) {
             for (int j = 0; j < columnAmount; j++) {
-                System.out.printf("%18.6E", matrixArray[i][j]);  // Вывод элементов матрицы с двумя знаками после запятой
+                System.out.printf("%18.6E", matrixArray[i][j]); // Вывод элементов матрицы
             }
-            System.out.println();  // Переход на новую строку
+            System.out.println();
         }
-        System.out.println();  // Вывод пустой строки для отделения матрицы от остального вывода
+        System.out.println();
     }
 
-    public void Init(String s) throws FileNotFoundException {  // Метод для инициализации матрицы из файла
-        File file = new File(s);  // Создание объекта File с указанным именем файла
-        Scanner scan = new Scanner(file);  // Создание объекта Scanner для чтения файла
-        Pattern pat = Pattern.compile("[ \t]+");  // Создание объекта Pattern для разделения строки по пробельным символам
-        String str = scan.nextLine();  // Чтение первой строки из файла
-        String[] sn = pat.split(str);  // Разделение строки на массив строк по пробельным символам
-        rowAmount = Integer.parseInt(sn[0]);  // Преобразование первой строки в целое число и присвоение rowAmount
-        columnAmount = Integer.parseInt(sn[1]);  // Преобразование второй строки в целое число и присвоение columnAmount
-        epsilon = Math.pow(10, -Double.parseDouble(sn[2]) - 1);  // Преобразование третьей строки в число с плавающей точкой и вычисление epsilon
-        this.Create(rowAmount, columnAmount);  // Вызов метода Create для создания матрицы с указанным размером
+    public void Init(String s) throws FileNotFoundException {
+        File file = new File(s); // Создание объекта файла
+        Scanner scan = new Scanner(file); // Создание объекта сканера для чтения файла
+        Pattern pat = Pattern.compile("[ \t]"); // Паттерн для разделения строк на элементы
+        String str = scan.nextLine(); // Чтение строки из файла
+        String[] sn = pat.split(str); // Разделение строки на элементы
+        rowAmount = Integer.parseInt(sn[0]); // Чтение количества строк из первого элемента
+        columnAmount = Integer.parseInt(sn[1]); // Чтение количества столбцов из второго элемента
+        epsilon = Math.pow(10, -Double.parseDouble(sn[2]) - 1); // Чтение значения погрешности из третьего элемента
+        this.Create(rowAmount, columnAmount); // Создание матрицы с заданным количеством строк и столбцов
         int i, j;
-        for (i = 0; i < rowAmount; i++) {  // Цикл по строкам матрицы
-            str = scan.nextLine();  // Чтение следующей строки из файла
-            sn = pat.split(str);  // Разделение строки на массив строк по пробельным символам
-            for (j = 0; j < columnAmount; j++) {  // Цикл по столбцам матрицы
-                matrixArray[i][j] = Double.parseDouble(sn[j]);  // Преобразование элементов строки в числа с плавающей точкой и запись их в матрицу
+        for (i = 0; i < rowAmount; i++) {
+            str = scan.nextLine(); // Чтение строки из файла
+            sn = pat.split(str); // Разделение строки на элементы
+            for (j = 0; j < columnAmount; j++) {
+                matrixArray[i][j] = Double.parseDouble(sn[j]); // Запись элементов матрицы из строки
             }
         }
-        scan.close();  // Закрытие объекта Scanner после чтения файла
+        scan.close(); // Закрытие сканера
     }
 
-    private boolean IsAllZeroRow(int lineNumber) {  // Приватный метод для проверки, является ли строка матрицы нулевой
-        for (int i = 0; i < columnAmount; i++) {  // Цикл по столбцам строки
-            if (!IsZeroElement(matrixArray[lineNumber][i])) {  // Проверка, является ли элемент ненулевым
-                return false;  // Если найден ненулевой элемент, возвращается false
+    public boolean IsAllZeroRow(int row) {
+        for (int i = 0; i < columnAmount; i++) {
+            if (Math.abs(matrixArray[row][i]) > this.epsilon) {
+                return false; // Проверка, является ли строка нулевой
             }
         }
-        return true;  // Если все элементы строки нулевые, возвращается true
+        return true;
     }
 
-    // Определение метода приведения системы уравнений к треугольному виду.
+
     public Results MakeTriangle() {
-        // Запуск основного цикла по строкам матрицы, начиная с нулевой строки.
         for (int iteration = 0; iteration < rowAmount; iteration++) {
-            // Проверка, если итерация больше или равна количеству строк, то остановка выполнения цикла.
-            if (iteration >= rowAmount) {
-                break;
-            }
-
-            // Вызов функции SwapFirstNotZeroLine, которая пытается переставить текущую строку так,
-            // чтобы на главной диагонали был ненулевой элемент.
-            boolean swapResult = SwapFirstNotZeroLine(iteration);
-            // Если перестановка не удалась, то проводятся дополнительные проверки.
+            boolean swapResult = SwapFirstNotZeroLine(iteration); // Обмен текущей строки с первой строкой, в которой не нулевой элемент
             if (!swapResult) {
-                // Если текущая строка полностью состоит из нулей,
-                if (IsAllZeroRow(iteration)) {
-                    // и если последний элемент в этой строке также равен нулю,
-                    if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                        // то система имеет бесконечное количество решений.
-                        return Results.INFINITE_SOLUTIONS;
-                    } else {
-                        // Если же последний элемент в строке не равен нулю, то решений нет.
-                        return Results.NO_SOLUTIONS;
-                    }
-                } else {
-                    // Если же перестановка не удалась, но строка не состоит полностью из нулей,
-                    // то это указывает на то, что система вырожденная.
-                    return Results.DEGENERATE_SYSTEM;
-                }
-            }
-
-            // Проверка абсолютного значения элемента на диагонали с заданной точностью.
-            if (Math.abs(matrixArray[iteration][iteration]) < this.epsilon) {
-                // Если оно меньше заданной точности, то считается, что решение найдено.
-                return Results.SINGLE_SOLUTION;
-            }
-
-            // Пересчет коэффициентов после возможной перестановки строк.
-            RecalculateCoefficients(iteration, iteration);
-
-            // Если мы на последней итерации и последний диагональный элемент равен нулю,
-            if (iteration == rowAmount - 1 && IsZeroElement(matrixArray[iteration][iteration])) {
-                // то дополнительно проверяем последний элемент в строке.
                 if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                    // Если он равен нулю, то система имеет бесконечное количество решений.
-                    return Results.INFINITE_SOLUTIONS;
+                    return Results.INFINITE_SOLUTIONS; // Система имеет бесконечное количество решений
                 } else {
-                    // Если он не равен нулю, то решений нет.
-                    return Results.NO_SOLUTIONS;
+                    return Results.NO_SOLUTIONS; // Система не имеет решений
                 }
             }
+
+            if (Math.abs(matrixArray[iteration][iteration]) < this.epsilon) {
+                if (iteration == rowAmount - 1 && IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
+                    return Results.INFINITE_SOLUTIONS; // Система имеет бесконечное количество решений
+                } else {
+                    return Results.DEGENERATE_SYSTEM; // Система вырожденная
+                }
+            }
+
+            RecalculateCoefficients(iteration, iteration); // Пересчет коэффициентов для приведения матрицы к треугольному виду
         }
-        // Если процесс выполнен для всех строк, и ни одно из условий преждевременного выхода не выполнено,
-        // то система имеет единственное решение.
-        return Results.SINGLE_SOLUTION;
+
+        // Проверка после приведения к треугольному виду
+        for (int i = 0; i < rowAmount; i++) {
+            boolean allZeros = true;
+            for (int j = 0; j < columnAmount - 1; j++) {
+                if (Math.abs(matrixArray[i][j]) > this.epsilon) {
+                    allZeros = false; // Проверка, является ли строка нулевой
+                    break;
+                }
+            }
+            if (allZeros && Math.abs(matrixArray[i][columnAmount - 1]) > this.epsilon) {
+                return Results.NO_SOLUTIONS; // Система не имеет решений
+            }
+        }
+
+        return Results.SINGLE_SOLUTION; // Система имеет единственное решение
     }
 
-    private void RecalculateCoefficients(int currentRow, int nextRow) {  // Приватный метод для пересчета коэффициентов после перестановки строк
-        for (int i = currentRow + 1; i < rowAmount; i++) {  // Цикл по строкам, начиная со следующей строки после текущей
-            double multiplier = matrixArray[i][nextRow] / matrixArray[nextRow][nextRow];  // Вычисление множителя для приведения к нулю элементов под диагональю
-            for (int j = nextRow; j < columnAmount; j++) {  // Цикл по столбцам, начиная с текущего столбца
-                matrixArray[i][j] -= multiplier * matrixArray[nextRow][j];  // Вычитание произведения множителя и элемента текущей строки из соответствующего элемента следующей строки
-            }
-            // Проверка, является ли строка теперь нулевой, но правая часть уравнения не нулевая
-            if (i != rowAmount - 1 && IsZeroElement(matrixArray[i][i]) && !IsZeroElement(matrixArray[i][columnAmount - 1])) {
-                throw new IllegalStateException("Система не имеет решений");  // Генерация исключения, если система не имеет решений
+    private void RecalculateCoefficients(int row, int iteration) {
+        double diagElement = matrixArray[iteration][iteration]; // Диагональный элемент
+        for (int j = iteration; j < columnAmount; j++) {
+            matrixArray[iteration][j] /= diagElement; // Деление элементов строки на диагональный элемент
+        }
+        for (int i = iteration + 1; i < rowAmount; i++) {
+            double upperRowCoeff = matrixArray[i][iteration]; // Коэффициент строки выше текущей строки
+            for (int j = iteration; j < columnAmount; j++) {
+                matrixArray[i][j] -= matrixArray[iteration][j] * upperRowCoeff; // Вычитание из элементов строки текущей строки, умноженных на коэффициент
             }
         }
     }
 
-    private boolean SwapFirstNotZeroLine(int lineNumber) {  // Приватный метод для перестановки строки, чтобы первый ненулевой элемент оказался на диагонали
-        if (IsZeroElement(matrixArray[lineNumber][lineNumber])) {  // Проверка, является ли элемент на диагонали нулевым
-            int notZeroLine = FindLineWithNotZeroElement(lineNumber);  // Поиск строки с первым ненулевым элементом в столбце
-            if (notZeroLine == NotFounded) {  // Если строка не найдена
-                return false;  // Возвращается false
+    private boolean SwapFirstNotZeroLine(int lineNumber) {
+        if (IsZeroElement(matrixArray[lineNumber][lineNumber])) {
+            int notZeroLine = FindLineWithNotZeroElement(lineNumber); // Поиск строки, в которой не нулевой элемент
+            if (notZeroLine == NotFounded) {
+                return false;
             }
-            SwapLines(lineNumber, notZeroLine);  // Перестановка строк
+            SwapLines(lineNumber, notZeroLine); // Обмен текущей строки с найденной строкой
         }
-        return true;  // Возвращается true
+        return true;
     }
 
-    public double[] CheckSolutions() {  // Метод для проверки решений системы уравнений
-        Results result = MakeTriangle();  // Вызов метода MakeTriangle для приведения матрицы к треугольному виду
-        switch (result) {  // Оператор выбора в зависимости от результата приведения матрицы к треугольному виду
+    public double[] CheckSolutions() {
+        Results result = MakeTriangle(); // Приведение матрицы к треугольному виду и определение результата
+        switch (result) {
             case SINGLE_SOLUTION:
-                solution = FindSolutions();  // Вызов метода FindSolutions для нахождения решений
-                return solution;  // Возвращается массив решений
+                solution = FindSolutions(); // Нахождение решений системы
+                return solution;
             case DEGENERATE_SYSTEM:
-                System.out.println("Система вырожденная");  // Вывод сообщения о вырожденной системе
-                return new double[0];  // Возвращается пустой массив
+                System.out.println("Система вырожденная"); // Вывод сообщения о вырожденной системе
+                return new double[0];
             case INFINITE_SOLUTIONS:
-                System.out.println("Система имеет бесконечное количество решений");  // Вывод сообщения о бесконечном количестве решений
-                return new double[0];  // Возвращается пустой массив
+                System.out.println("Система имеет бесконечное количество решений"); // Вывод сообщения о бесконечном количестве решений
+                return new double[0];
             case NO_SOLUTIONS:
-                System.out.println("Система не имеет решений");  // Вывод сообщения о отсутствии решений
-                return new double[0];  // Возвращается пустой массив
+                System.out.println("Система не имеет решений"); // Вывод сообщения о системе без решений
+                return new double[0];
             default:
-                return new double[0];  // Возвращается пустой массив
+                return new double[0];
+        }
+
+    }
+
+    public double[] FindSolutions() {
+        solution = new double[rowAmount]; // Массив для хранения решений
+        for (int i = rowAmount - 1; i >= 0; i--) {
+            double sol = GetSolution(i); // Нахождение решения для каждой строки
+            solution[i] = sol;
+        }
+        return solution;
+    }
+
+    private void Create(int rowAmount, int columnAmount) {
+        matrixArray = new double[rowAmount][columnAmount]; // Создание матрицы с заданным количеством строк и столбцов
+        for (int i = 0; i < rowAmount; i++) {
+            matrixArray[i] = new double[columnAmount]; // Создание массива для каждой строки матрицы
         }
     }
 
-    public double[] FindSolutions() {  // Метод для нахождения решений системы уравнений
-        solution = new double[rowAmount];  // Создание массива для хранения решений
-        for (int i = rowAmount - 1; i >= 0; i--) {  // Цикл по строкам матрицы в обратном порядке
-            double sol = GetSolution(i);  // Вычисление решения для текущей строки
-            solution[i] = sol;  // Присвоение решения соответствующему элементу массива
-        }
-        return solution;  // Возвращается массив решений
-    }
-
-    private void Create(int rowAmount, int columnAmount) {  // Приватный метод для создания матрицы с указанным размером
-        matrixArray = new double[rowAmount][columnAmount];  // Создание двумерного массива для хранения элементов матрицы
-        for (int i = 0; i < rowAmount; i++) {  // Цикл по строкам матрицы
-            matrixArray[i] = new double[columnAmount];  // Создание массива для хранения элементов строки
-        }
-    }
-
-    private int FindLineWithNotZeroElement(int lineNumber) {  // Приватный метод для поиска строки с первым ненулевым элементом в столбце
-        for (int i = lineNumber; i < rowAmount; i++) {  // Цикл по строкам, начиная с текущей строки
-            if (!IsZeroElement(matrixArray[i][lineNumber])) {  // Проверка, является ли элемент ненулевым
-                return i;  // Возвращается номер строки
+    private int FindLineWithNotZeroElement(int lineNumber) {
+        for (int i = lineNumber; i < rowAmount; i++) {
+            if (!IsZeroElement(matrixArray[i][lineNumber])) {
+                return i; // Поиск строки, в которой не нулевой элемент
             }
         }
-        return NotFounded;  // Если строка не найдена, возвращается значение NotFounded
+        return NotFounded;
     }
 
-    private void SwapLines(int firstLine, int secondLine) {  // Приватный метод для перестановки двух строк матрицы
-        double[] temp = matrixArray[secondLine];  // Временное хранение второй строки
-        matrixArray[secondLine] = matrixArray[firstLine];  // Копирование первой строки во вторую
-        matrixArray[firstLine] = temp;  // Копирование временно сохраненной строки в первую
+    private void SwapLines(int firstLine, int secondLine) {
+        double[] temp = matrixArray[secondLine]; // Временный массив для обмена строк
+        matrixArray[secondLine] = matrixArray[firstLine]; // Обмен строк
+        matrixArray[firstLine] = temp;
     }
 
-    private boolean IsZeroElement(double element) {  // Приватный метод для проверки, является ли элемент нулевым
-        return Math.abs(element) < epsilon;  // Возвращается true, если элемент по модулю меньше погрешности epsilon
+    private boolean IsZeroElement(double element) {
+        return Math.abs(element) < epsilon; // Проверка, является ли элемент нулевым
     }
 
-    private double GetSolution(int i) {  // Приватный метод для вычисления решения уравнения для заданной строки
-        double sum = 0;  // Инициализация суммы
-        for (int j = i + 1; j < columnAmount - 1; j++) {  // Цикл по столбцам, начиная со следующего столбца
-            sum += solution[j] * matrixArray[i][j];  // Прибавление произведения решения и элемента матрицы к сумме
+    private double GetSolution(int i) {
+        double sum = 0;
+        for (int j = i + 1; j < columnAmount - 1; j++) {
+            sum += solution[j] * matrixArray[i][j]; // Суммирование произведений элементов строки на соответствующие решения
         }
-        return (matrixArray[i][columnAmount - 1] - sum) / matrixArray[i][i];  // Возвращается вычисленное решение
+        return (matrixArray[i][columnAmount - 1] - sum) / matrixArray[i][i]; // Нахождение значения решения
     }
 
-    public int getRowAmount() {  // Геттер для получения количества строк в матрице
-        return this.rowAmount;  // Возвращается значение поля rowAmount
+    public int getRowAmount() {
+        return this.rowAmount; // Получение количества строк
     }
 
-    public int getColumnAmount() {  // Геттер для получения количества столбцов в матрице
-        return this.columnAmount;  // Возвращается значение поля columnAmount
+    public int getColumnAmount() {
+        return this.columnAmount; // Получение количества столбцов
     }
 
-    public double[][] getMatrixArray() {  // Геттер для получения двумерного массива элементов матрицы
-        return this.matrixArray;  // Возвращается ссылка на двумерный массив matrixArray
+    public double[][] getMatrixArray() {
+        return this.matrixArray; // Получение массива матрицы
     }
 }

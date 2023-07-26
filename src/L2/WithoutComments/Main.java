@@ -1,4 +1,4 @@
-package L2;
+package L2.WithoutComments;
 
 
 import java.io.FileNotFoundException;
@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         // Создание объекта матрицы
         try {
-            L2.Matrix matrix = new L2.Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L2\\input2.txt");
+            Matrix matrix = new Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L2\\input2.txt");
             System.out.println("Исходная матрица:");
             // Вывод исходной матрицы на экран
             matrix.Print();

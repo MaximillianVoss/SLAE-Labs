@@ -1,11 +1,14 @@
-package L3;
+package L3.WithComments;
+
+import L3.Grid;
+import L3.Polynomial;
 
 // Класс для интерполяционного полинома в форме Лагранжа
-public class LagrangePolynomial {
-    public Polynomial polynomial; // Объект класса Polynomial для хранения полинома
+class LagrangePolynomial {
+    Polynomial polynomial; // Объект класса Polynomial для хранения полинома
 
     // Конструктор, принимающий grid - объект класса Grid с узлами сетки и значениями сеточной функции
-    public LagrangePolynomial(Grid grid) {
+    LagrangePolynomial(Grid grid) {
         polynomial = new Polynomial();
 
         for (int i = 0; i < grid.nodes.length; i++) {

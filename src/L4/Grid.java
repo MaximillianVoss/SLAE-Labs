@@ -3,12 +3,12 @@ package L4;
 import static L4.Main.f;
 
 // Класс для хранения узлов сетки и значений сеточной функции
-class Grid {
-    double[] nodes; // Массив узлов сетки
-    double[] values; // Массив значений сеточной функции
+public class Grid {
+    public double[] nodes; // Массив узлов сетки
+    public double[] values; // Массив значений сеточной функции
 
     // Конструктор класса Grid для выделения памяти
-    Grid(double a, double b, int points) {
+    public Grid(double a, double b, int points) {
         nodes = new double[points];
         values = new double[points];
 

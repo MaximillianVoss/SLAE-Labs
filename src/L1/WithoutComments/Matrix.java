@@ -61,50 +61,61 @@ public class Matrix {
 
     public Results MakeTriangle() {
         for (int iteration = 0; iteration < rowAmount; iteration++) {
-            if (iteration >= rowAmount) {
-                break;
-            }
-
             boolean swapResult = SwapFirstNotZeroLine(iteration);
             if (!swapResult) {
                 if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                    return Results.DEGENERATE_SYSTEM;
+                    return Results.INFINITE_SOLUTIONS;
                 } else {
                     return Results.NO_SOLUTIONS;
                 }
             }
 
             if (Math.abs(matrixArray[iteration][iteration]) < this.epsilon) {
-                // Проверка, если на последней итерации и последний диагональный элемент равен нулю,
-                if (iteration == rowAmount - 1 && IsZeroElement(matrixArray[iteration][iteration])) {
-                    if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                        return Results.INFINITE_SOLUTIONS;
-                    } else {
-                        return Results.NO_SOLUTIONS;
-                    }
+                if (iteration == rowAmount - 1 && IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
+                    return Results.INFINITE_SOLUTIONS;
                 } else {
-                    continue; // Пропускаем итерацию, если диагональный элемент равен нулю
+                    return Results.DEGENERATE_SYSTEM;
                 }
             }
 
             RecalculateCoefficients(iteration, iteration);
         }
+
+        // Проверка после приведения к треугольному виду
+        for (int i = 0; i < rowAmount; i++) {
+            boolean allZeros = true;
+            for (int j = 0; j < columnAmount - 1; j++) {
+                if (Math.abs(matrixArray[i][j]) > this.epsilon) {
+                    allZeros = false;
+                    break;
+                }
+            }
+            if (allZeros && Math.abs(matrixArray[i][columnAmount - 1]) > this.epsilon) {
+                return Results.NO_SOLUTIONS;
+            }
+        }
+
         return Results.SINGLE_SOLUTION;
     }
 
 
 
-    private void RecalculateCoefficients(int currentRow, int nextRow) {
-        for (int i = currentRow + 1; i < rowAmount; i++) {
-            double multiplier = matrixArray[i][nextRow] / matrixArray[nextRow][nextRow];
-            for (int j = nextRow; j < columnAmount; j++) {
-                matrixArray[i][j] -= multiplier * matrixArray[nextRow][j];
-            }
-            if (i != rowAmount - 1 && IsZeroElement(matrixArray[i][i]) && !IsZeroElement(matrixArray[i][columnAmount - 1])) {
-                throw new IllegalStateException("Система не имеет решений");
+
+
+
+    private void RecalculateCoefficients(int row, int iteration) {
+        double diagElement = matrixArray[iteration][iteration];
+        for (int j = iteration; j < columnAmount; j++) {
+            matrixArray[iteration][j] /= diagElement;
+        }
+        for (int i = iteration + 1; i < rowAmount; i++) {
+            double upperRowCoeff = matrixArray[i][iteration];
+            for (int j = iteration; j < columnAmount; j++) {
+                matrixArray[i][j] -= matrixArray[iteration][j] * upperRowCoeff;
             }
         }
     }
+
 
     private boolean SwapFirstNotZeroLine(int lineNumber) {
         if (IsZeroElement(matrixArray[lineNumber][lineNumber])) {
@@ -135,6 +146,7 @@ public class Matrix {
             default:
                 return new double[0];
         }
+
     }
 
     public double[] FindSolutions() {

@@ -1,8 +1,7 @@
-package L2;
+package L2.WithoutComments;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Matrix {
@@ -70,7 +69,6 @@ public class Matrix {
         }
         return newApproximation;
     }
-
 
     private void swapRows(int row1, int row2) {
         double[] temp = array[row1];

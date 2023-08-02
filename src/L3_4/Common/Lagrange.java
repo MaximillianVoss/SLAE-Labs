@@ -1,41 +1,63 @@
 package L3_4.Common;
 
-import L3_4.Common.Grid;
-import L3_4.Common.Polynom;
-
+/**
+ * Класс Lagrange предназначен для работы с полиномом Лагранжа.
+ */
 public class Lagrange {
 
-    private Polynom lagrangePolynom;                                      // полином Лагранжа
+    // Полином Лагранжа
+    private Polynom polynom;
 
-    public Lagrange(Grid grid) {                                            // конструктор Класса по сетке
-        lagrangePolynom = new Polynom();                                  // создаем новый полином
-        double temp;                                                // коэффициент, получаемый благодаря умножению f(x) на знаменатель
-        Polynom curBin = new Polynom();                                   // текущий бином
-        for (int i = 0; i < grid.getCount(); i++) {                  // до конца сетки считаем полином Лагранжа по формуле
-            Polynom curPolynom = new Polynom(0, 1);                    // текущий полином, создаваемый на i-ом шаге
-            temp = grid.getY(i);                                    // f(x)
-            for (int j = 0; j < i; j++) {                            // до i-ого элемента
-                temp /= (grid.getX(i) - grid.getX(j));              // делим f(x) на знаменатель
-                curBin.changeBin(-grid.getX(j));                    // создаем бином и умножаем его на текущий полином, таким образом формируя текущий полином
+    /**
+     * Конструктор класса Lagrange, который строит полином Лагранжа по заданной сетке.
+     *
+     * @param grid объект класса Grid, содержащий сетку точек
+     */
+    public Lagrange(Grid grid) {
+        // Создаем новый полином
+        polynom = new Polynom();
+
+        // Проходим по всей сетке и формируем полином Лагранжа
+        for (int i = 0; i < grid.getCount(); i++) {
+            // Текущий коэффициент и полином на i-ом шаге
+            double temp = grid.getY(i);
+            Polynom curPolynom = new Polynom(0, 1);
+
+            // Формируем полином, перемножая текущий полином с биномом
+            for (int j = 0; j < i; j++) {
+                temp /= (grid.getX(i) - grid.getX(j));
+                Polynom curBin = new Polynom();
+                curBin.changeBin(-grid.getX(j));
                 curPolynom = curPolynom.multiple(curBin);
             }
+
             for (int j = i + 1; j < grid.getCount(); j++) {
-                temp /= (grid.getX(i) - grid.getX(j));              // делим f(x) на знаменатель
-                curBin.changeBin(-grid.getX(j));                    // создаем бином и умножаем его на текущий полином
+                temp /= (grid.getX(i) - grid.getX(j));
+                Polynom curBin = new Polynom();
+                curBin.changeBin(-grid.getX(j));
                 curPolynom = curPolynom.multiple(curBin);
             }
-            curPolynom.multipleK(temp);                                // умножаем текущий полином на полученный коэффициент (f(x)/(...)
-            lagrangePolynom.sum(curPolynom);                              // складываем полученный полином
 
+            // Умножаем текущий полином на коэффициент и добавляем к полиному Лагранжа
+            curPolynom.multipleK(temp);
+            polynom.sum(curPolynom);
         }
     }
 
+    /**
+     * Метод для вычисления значения полинома в заданной точке.
+     *
+     * @param x точка, в которой нужно вычислить значение
+     * @return значение полинома в точке x
+     */
     public double findSol(double x) {
-        return lagrangePolynom.getPoint(x);
-    }           // значение полинома в точке
+        return polynom.getPoint(x);
+    }
 
+    /**
+     * Метод для вывода полинома Лагранжа.
+     */
     public void print() {
-        lagrangePolynom.print();
-    }                                  // вывод полинома Лагранжа
-
+        polynom.print();
+    }
 }

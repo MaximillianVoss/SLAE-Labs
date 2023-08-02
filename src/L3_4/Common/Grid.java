@@ -1,47 +1,86 @@
 package L3_4.Common;
 
+/**
+ * Класс представляющий сетку точек на двухмерной плоскости.
+ */
 public class Grid {
-    private int count;                                          // количество точек в сетке
-    private double[] x;                                         // массив х
-    private double[] y;                                         // массив у
-    private int last = -1;                                      // последний занятый элемент массива
 
-    public Grid(int count) {                                     // конструктор сетки по количеству точек
-        this.count = count;                                     // создание соответствующих массивов
+    // Количество точек в сетке
+    private int count;
+
+    // Массив координат X и Y точек
+    private double[] x;
+    private double[] y;
+
+    // Индекс последнего добавленного элемента в сетку
+    private int last = -1;
+
+    /**
+     * Создает новую сетку заданного размера.
+     *
+     * @param count количество точек в сетке.
+     */
+    public Grid(int count) {
+        this.count = count;
         x = new double[count];
         y = new double[count];
     }
 
-    //инициализируем
-    public void addPoint(double x, double y) {                   // добавление новой точки с координатами х и у
-        if (last + 1 < count) {                                  // если следующий элемент не выходит за рамки сетки, то повышаем индекс последнего занятого
-            last++;                                             // и добавляем точку
+    /**
+     * Возвращает координату X точки по индексу.
+     *
+     * @param index индекс точки в сетке.
+     * @return координата X точки.
+     */
+    public double getX(int index) {
+        return x[index];
+    }
+
+    /**
+     * Возвращает координату Y точки по индексу.
+     *
+     * @param index индекс точки в сетке.
+     * @return координата Y точки.
+     */
+    public double getY(int index) {
+        return y[index];
+    }
+
+    /**
+     * Возвращает количество точек в сетке.
+     *
+     * @return количество точек в сетке.
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * Добавляет новую точку в сетку.
+     *
+     * @param x координата X новой точки.
+     * @param y координата Y новой точки.
+     */
+    public void addPoint(double x, double y) {
+        if (last + 1 < count) {
+            last++;
             this.x[last] = x;
             this.y[last] = y;
         }
     }
 
-    public double getX(int index) {
-        return x[index];
-    }           // возвращаем координату х по индексу index
-
-    public double getY(int index) {
-        return y[index];
-    }            // возвращаем координату у по индексу index
-
-    public int getCount() {
-        return count;
-    }                      // возвращаем количество точек
-
-    public int findEl(double x) {                                 // поиск индекса по координате х
-        int pos = -1;                                            // если точки нет на сетке, то вернем позицию -1
-        for (int i = 0; i <= last; i++) {                         // если точка есть на сетке, возвращаем ее индекс
+    /**
+     * Ищет индекс точки в сетке по ее координате X.
+     *
+     * @param x координата X искомой точки.
+     * @return индекс искомой точки или -1, если точка не найдена.
+     */
+    public int find(double x) {
+        for (int i = 0; i <= last; i++) {
             if (Math.abs(this.x[i] - x) <= 1e-6) {
-                pos = i;
-                return pos;
+                return i;
             }
         }
-        return pos;
+        return -1;
     }
-
 }

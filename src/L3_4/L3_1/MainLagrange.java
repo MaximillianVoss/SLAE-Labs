@@ -1,6 +1,6 @@
 package L3_4.Lagrange;
 
-import L3_4.L3_1.Lagrange;
+import L3_4.Common.Lagrange;
 import L3_4.Common.Grid;
 
 public class MainLagrange {
@@ -29,8 +29,8 @@ public class MainLagrange {
         System.out.printf("%20s %20s %20s %20s", "X", "Y", "f(x)", "Ln(x)");
         System.out.println();
         for (double i = a; i <= b; i += step) {                  // в заданном интервале [a,b] с шагом step
-            if (grid.findEl(i) >= 0) {                                       // если у есть на сетке, то выписываем полную строчку
-                System.out.printf("%20.6E %20.6E %20.6E %20.6E", i, grid.getY(grid.findEl(i)), function(i), lagrange.findSol(i));
+            if (grid.find(i) >= 0) {                                       // если у есть на сетке, то выписываем полную строчку
+                System.out.printf("%20.6E %20.6E %20.6E %20.6E", i, grid.getY(grid.find(i)), function(i), lagrange.findSol(i));
             } else {                                                          // если у не определен на сетке, то выписываем строчку без него
                 System.out.format("%20.6E %20s %20.6E %20.6E", i, "", function(i), lagrange.findSol(i));
             }

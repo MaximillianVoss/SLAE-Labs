@@ -1,4 +1,4 @@
-package L3_4.L4_1;
+package L3_4.Common;
 
 import L3_4.Common.Grid;
 import L3_4.Common.Polynom;

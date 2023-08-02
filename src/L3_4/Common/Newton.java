@@ -1,52 +1,69 @@
 package L3_4.Common;
 
-import L3_4.Common.Grid;
-import L3_4.Common.Polynom;
-
+/**
+ * Класс Newton предназначен для работы с полиномом Ньютона.
+ */
 public class Newton {
 
-    private double[] differences;                              // массива разностей
-    private Polynom newton;                                        // полином Ньютона
+    // Массив разностей для формирования полинома Ньютона
+    private double[] differences;
+    // Полином Ньютона
+    private Polynom newton;
 
-    public Newton(Grid grid) {                                          // конструктор по сетке
-        int length = grid.getCount();                           // количество элементов в сетке
-        differences = new double[length];                       // задаем массив разностей
-        double firstArrOfDif[] = new double[length];           // первый массив разностей (на данном этапе 0-ого порядка)
-        double secondArrOfDif[] = new double[length];          // второй массив разностей (на данном этапе 1-ого порядка)
+    /**
+     * Конструктор класса Newton, который строит полином Ньютона по заданной сетке.
+     *
+     * @param grid объект класса Grid, содержащий сетку точек
+     */
+    public Newton(Grid grid) {
+        int length = grid.getCount();
+        differences = new double[length];
+        double firstArrOfDif[] = new double[length];
+        double secondArrOfDif[] = new double[length];
 
-        for (int i = 0; i < length; i++) {                       // добавляем разности 0-ого порядка
+        // Инициализация массива разностей 0-ого порядка
+        for (int i = 0; i < length; i++) {
             firstArrOfDif[i] = grid.getY(i);
         }
-        differences[0] = firstArrOfDif[0];                      // копируем в массив разностей первую разность 0-ого порядка
-        for (int i = 1; i < length; i++) {                       // от 1-ого порядка и до конца
-            for (int j = 0; j < length - i; j++) {               // считаем массив разностей n-ого порядка по формуле, где i - номер порядка
+        differences[0] = firstArrOfDif[0];
+
+        // Расчет массива разностей n-ого порядка
+        for (int i = 1; i < length; i++) {
+            for (int j = 0; j < length - i; j++) {
                 secondArrOfDif[j] = (firstArrOfDif[j] - firstArrOfDif[j + 1]) / (grid.getX(j) - grid.getX(j + i));
             }
-
-            firstArrOfDif = secondArrOfDif;             // присваиваем первому массиву второй
-
-            differences[i] = firstArrOfDif[0];          // добавляем разность i-ого порядка в основной массив
+            firstArrOfDif = secondArrOfDif;
+            differences[i] = firstArrOfDif[0];
         }
 
-        newton = new Polynom(0, differences[0]);       // создаем полином Ньютона по разности 0-ого порядка
-        Polynom curBin = new Polynom();                      // текущий бином
+        // Формирование полинома Ньютона
+        newton = new Polynom(0, differences[0]);
+        Polynom curBin = new Polynom();
         for (int i = 1; i < length; i++) {
-            Polynom curPolynom = new Polynom(0, 1);       // создаем текущий полином на i-ом шаге
-            for (int j = 0; j < i; j++) {               // заполняем полином произведением биномов
+            Polynom curPolynom = new Polynom(0, 1);
+            for (int j = 0; j < i; j++) {
                 curBin.changeBin(-grid.getX(j));
                 curPolynom = curPolynom.multiple(curBin);
             }
-            curPolynom.multipleK(differences[i]);         // умножаем полином на соответствующую разность
-            newton.sum(curPolynom);                       // и прибавляем полученный полином к полиному Лагранжа
+            curPolynom.multipleK(differences[i]);
+            newton.sum(curPolynom);
         }
     }
 
-    public double findSol(double x) {                   // значение полинома в точке
+    /**
+     * Метод для вычисления значения полинома в заданной точке.
+     *
+     * @param x точка, в которой нужно вычислить значение
+     * @return значение полинома в точке x
+     */
+    public double findSol(double x) {
         return newton.getPoint(x);
     }
 
-    public void print() {                                // выводм полинома Ньютона
+    /**
+     * Метод для вывода полинома Ньютона.
+     */
+    public void print() {
         newton.print();
     }
-
 }

@@ -1,51 +1,85 @@
 package L3_4.Common;
 
+/**
+ * Основной класс приложения.
+ */
 public class Main {
 
+    /**
+     * Основной метод приложения.
+     *
+     * @param args аргументы командной строки
+     */
     public static void main(String[] args) {
 
-        double a = 0;                       // а - начало интервала, b - конец интервала
+        // Начало интервала.
+        double a = 0;
+        // Конец интервала.
         double b = 1;
-        int n = 7;                          // количество точек в сетке
-        Grid grid = new Grid(n);            // создаем сетку
-        double step = (b - a) / (n - 1);     // задаем шаг по сетке
+        // Количество точек в сетке.
+        int n = 7;
+        // Размер шага.
+        double step = (b - a) / (n - 1);
+
+        // Создаем сетку из n точек.
+        Grid grid = new Grid(n);
+
+        // Заполняем сетку точками.
         for (double i = a; i <= b; i += step) {
-            grid.addPoint(i, function(i));          // добавляем новые точки в сетку
+            grid.addPoint(i, function(i));
         }
 
-        Lagrange langrage = new Lagrange(grid);             // создаем полином Лагранжа
+        // Создаем полином Лагранжа.
+        Lagrange lagrange = new Lagrange(grid);
         System.out.println("Полином в форме Лагранжа:");
-        langrage.print();                                   // выводим его
-        System.out.println();
+        // Печатаем полином Лагранжа.
+        lagrange.print();
         System.out.println();
 
-        Newton newton = new Newton(grid);                   // создаем полином Ньютона
+        // Создаем полином Ньютона.
+        Newton newton = new Newton(grid);
         System.out.println("Полином в форме Ньютона:");
-        newton.print();                                     // выводим его
-        System.out.println();
+        // Печатаем полином Ньютона.
+        newton.print();
         System.out.println();
 
-        printTable(grid, a, b, step / 2, langrage, newton);              // выводим таблицу с х, у, f(x), и полиномом в точке х
+        // Печатаем таблицу с x, y, f(x) и полиномом в точке x.
+        printTable(grid, a, b, step / 2, lagrange, newton);
     }
 
-    public static void printTable(Grid grid, double a, double b, double step, Lagrange lagrange, Newton newton) {      // вывод таблицы по Лагранжу
+    /**
+     * Выводит таблицу x, y, f(x), и полином в точке x.
+     *
+     * @param grid     сетка точек
+     * @param a        начало интервала
+     * @param b        конец интервала
+     * @param step     размер шага
+     * @param lagrange полином Лагранжа
+     * @param newton   полином Ньютона
+     */
+    public static void printTable(Grid grid, double a, double b, double step, Lagrange lagrange, Newton newton) {
         System.out.printf("%20s %20s %20s %20s %20s", "X", "Y", "f(x)", "Ln(x)", "Nn(x)");
         System.out.println();
-        for (double i = a; i <= b; i += step) {                  // в заданном интервале [a,b] с шагом step
-            if (grid.find(i) >= 0) {                                       // если у есть на сетке, то выписываем полную строчку
-                System.out.printf("%20.6E %20.6E %20.6E %20.6E %20.6E", i, grid.getY(grid.find(i)), function(i), lagrange.findSol(i), newton.findSol(i));
-            } else {                                                          // если у не определен на сетке, то выписываем строчку без него
+
+        // Печатаем каждую точку и соответствующие значения функции и полинома.
+        for (double i = a; i <= b; i += step) {
+            int index = grid.find(i);
+            if (index >= 0) {
+                System.out.printf("%20.6E %20.6E %20.6E %20.6E %20.6E", i, grid.getY(index), function(i), lagrange.findSol(i), newton.findSol(i));
+            } else {
                 System.out.format("%20.6E %20s %20.6E %20.6E %20.6E", i, "", function(i), lagrange.findSol(i), newton.findSol(i));
             }
             System.out.println();
         }
-
     }
 
-    public static double function(double x) {                     // значение функции в точке x
-        //return 3.8332*x*x*x*x*x*x - 6.7677*x*x*x - 0.0023;
+    /**
+     * Вычисляет значение функции в точке x.
+     *
+     * @param x входное значение
+     * @return значение функции в точке x
+     */
+    public static double function(double x) {
         return Math.sin(x * x / 2);
-        //return x*x;
     }
-
 }

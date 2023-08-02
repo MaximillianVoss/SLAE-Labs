@@ -207,119 +207,184 @@ public class Polynom {
     }
 
 
-    public Polynom multiply(Polynom poly) {
+    /**
+     * Умножение текущего полинома на другой полином.
+     *
+     * @param anotherPolynom полином, на который умножается текущий полином
+     * @return новый полином, который является результатом умножения
+     */
+    public Polynom multiply(Polynom anotherPolynom) {
+        // Создание новых объектов
         Monomial newMonomial = null;
-        Monomial curNewMonomial = null;
-        Polynom newPoly = new Polynom();
-        Monomial newPrev = null;
-        int st;
+        Monomial currentNewMonomial = null;
+        Polynom newPolynom = new Polynom();
+        Monomial previousNewMonomial = null;
+        int calculatedDegree;
 
-        Monomial curFirst = head;
-        Monomial curSecond;
-        while (curFirst != null) {
-            curSecond = poly.head;
-            curNewMonomial = newPoly.head;
+        // Инициализация текущих мономов для первого и второго полинома
+        Monomial currentFirstMonomial = head;
+        Monomial currentSecondMonomial;
 
-            while (curSecond != null) {
-                st = curFirst.degree + curSecond.degree;
-                if (Math.abs(curFirst.coefficient * curSecond.coefficient) <= 1e-6) {
-                    curSecond = curSecond.nextMonomial;
-                } else if (curNewMonomial == null) {                    // если новый полином еще не задан
-                    newPoly.head = new Monomial(curFirst.degree + curSecond.degree, curSecond.coefficient * curFirst.coefficient);      // задаем начальный моном нового полинома
-                    curSecond = curSecond.nextMonomial;             // двигаем второй полином
-                    curNewMonomial = newPoly.head;              // запоминаем новый текущий моном в новом полиноме
-                } else {
-                    if (curNewMonomial.degree == st) {               // если посчитанная степень совпадает со степенью текущего монома в новом полиноме
-                        if (curNewMonomial.coefficient + curFirst.coefficient * curSecond.coefficient == 0) {              // и если сумма коэффициентов равно 0 (при приведении подобных)
-                            if (curNewMonomial == newPoly.head) {                            // если новый моном находится в самом начале
-                                curNewMonomial = curNewMonomial.nextMonomial;                           // сдвигаем новый полином
-                                newPoly.head = curNewMonomial;
+        // Проходим по всем мономам в первом полиноме
+        while (currentFirstMonomial != null) {
+            currentSecondMonomial = anotherPolynom.head;
+            currentNewMonomial = newPolynom.head;
+
+            // Проходим по всем мономам второго полинома
+            while (currentSecondMonomial != null) {
+                // Рассчитываем степень для нового монома
+                calculatedDegree = currentFirstMonomial.degree + currentSecondMonomial.degree;
+
+                // Если произведение коэффициентов меньше или равно пороговому значению, переходим к следующему моному второго полинома
+                if (Math.abs(currentFirstMonomial.coefficient * currentSecondMonomial.coefficient) <= 1e-6) {
+                    currentSecondMonomial = currentSecondMonomial.nextMonomial;
+                }
+                // Проверяем, был ли уже инициализирован новый полином
+                else if (currentNewMonomial == null) {
+                    newPolynom.head = new Monomial(calculatedDegree, currentSecondMonomial.coefficient * currentFirstMonomial.coefficient);
+                    currentSecondMonomial = currentSecondMonomial.nextMonomial;
+                    currentNewMonomial = newPolynom.head;
+                }
+                // Проходим по уже инициализированным элементам нового полинома и добавляем новые элементы при необходимости
+                else {
+                    // Степень текущего монома нового полинома равна вычисленной степени
+                    if (currentNewMonomial.degree == calculatedDegree) {
+                        if (currentNewMonomial.coefficient + currentFirstMonomial.coefficient * currentSecondMonomial.coefficient == 0) {
+                            if (currentNewMonomial == newPolynom.head) {
+                                currentNewMonomial = currentNewMonomial.nextMonomial;
+                                newPolynom.head = currentNewMonomial;
                             } else {
-                                newPrev.nextMonomial = curNewMonomial.nextMonomial;                         // если сумма равно 0, а текущий моном нового полинома
-                                curNewMonomial = newPrev.nextMonomial;                              // находится в середине, то делаем вставку после предыдущего
+                                previousNewMonomial.nextMonomial = currentNewMonomial.nextMonomial;
+                                currentNewMonomial = previousNewMonomial.nextMonomial;
                             }
                         } else {
-                            curNewMonomial.coefficient += curFirst.coefficient * curSecond.coefficient;                   // приводи подобные
+                            currentNewMonomial.coefficient += currentFirstMonomial.coefficient * currentSecondMonomial.coefficient;
                         }
-                        curSecond = curSecond.nextMonomial;          // двигаем второй
-                    } else if (curNewMonomial.nextMonomial == null) {        // если следующего монома в новом полиноме нет, делаем вставку нового монома в конец полинома
-                        curNewMonomial.nextMonomial = new Monomial(st, curFirst.coefficient * curSecond.coefficient);
-                        newPrev = curNewMonomial;                // запоминаем предыдущий
-                        curNewMonomial = curNewMonomial.nextMonomial;        // двигаем второй и новый полиномы
-                        curSecond = curSecond.nextMonomial;
-                    } else if (curNewMonomial.degree > st) {            // если степень текущего монома в новом полиноме больше, полученной при умножении
-                        newPrev = curNewMonomial;                // двигаем новый полином
-                        curNewMonomial = curNewMonomial.nextMonomial;
-                    } else if (curNewMonomial.degree < st) {            // если степень текущего монома в новом полиноме меньше, полученной при умножении
-                        newMonomial = new Monomial(st, curFirst.coefficient * curSecond.coefficient);    // создаем новый моном, вставляем текущий моном нового полинома
-                        newMonomial.nextMonomial = curNewMonomial.nextMonomial;      // за ним
-                        curNewMonomial.nextMonomial = newMonomial;
-                        newPrev = curNewMonomial;
-                        curNewMonomial = curNewMonomial.nextMonomial;        // двигаем новый и второй полиномы
-                        curSecond = curSecond.nextMonomial;
+                        currentSecondMonomial = currentSecondMonomial.nextMonomial;
+                    }
+                    // Следующего монома в новом полиноме нет, делаем вставку нового монома в конец полинома
+                    else if (currentNewMonomial.nextMonomial == null) {
+                        currentNewMonomial.nextMonomial = new Monomial(calculatedDegree, currentFirstMonomial.coefficient * currentSecondMonomial.coefficient);
+                        previousNewMonomial = currentNewMonomial;
+                        currentNewMonomial = currentNewMonomial.nextMonomial;
+                        currentSecondMonomial = currentSecondMonomial.nextMonomial;
+                    }
+                    // Степень текущего монома в новом полиноме больше вычисленной степени
+                    else if (currentNewMonomial.degree > calculatedDegree) {
+                        previousNewMonomial = currentNewMonomial;
+                        currentNewMonomial = currentNewMonomial.nextMonomial;
+                    }
+                    // Степень текущего монома в новом полиноме меньше вычисленной степени
+                    else if (currentNewMonomial.degree < calculatedDegree) {
+                        newMonomial = new Monomial(calculatedDegree, currentFirstMonomial.coefficient * currentSecondMonomial.coefficient);
+                        newMonomial.nextMonomial = currentNewMonomial.nextMonomial;
+                        currentNewMonomial.nextMonomial = newMonomial;
+                        previousNewMonomial = currentNewMonomial;
+                        currentNewMonomial = currentNewMonomial.nextMonomial;
+                        currentSecondMonomial = currentSecondMonomial.nextMonomial;
                     }
                 }
             }
-            curFirst = curFirst.nextMonomial;                        // сдвигаем первый полином
+            // Переходим к следующему моному первого полинома
+            currentFirstMonomial = currentFirstMonomial.nextMonomial;
         }
-        return newPoly;                                      // возвращаем новый полином
+
+        // Возвращаем новый полином
+        return newPolynom;
     }
 
 
-    public double getPoint(double x) {                       // получение значения в точке
-        Monomial cur = head;                                     // сдвигаем полином в голову
-        double result = 0;                                   // значение в точке, вычисляемое по правилу Горнера
-        int st = cur.degree;                                     // степень текущего монома
-        while (cur != null) {                       // пока текущий моном существует и его степень больше 0
-            if (st == cur.degree) {                               // если степень равна степени текущего монома, то двигаем моном и увеличиваем сумму
-                result += cur.coefficient;
-                cur = cur.nextMonomial;
+    /**
+     * Вычисление значения полинома в заданной точке x, используя схему Горнера.
+     *
+     * @param x значение, в котором вычисляется полином
+     * @return значение полинома в точке x
+     */
+    public double getPoint(double x) {
+        Monomial currentMonomial = head; // Начинаем с головы списка мономов
+        double result = 0; // Результат, который будет аккумулировать вычисленное значение
+
+        // Степень текущего монома, инициализируем самой большой степенью (степенью головы)
+        int currentDegree = currentMonomial.degree;
+
+        // Проходим по мономам пока они существуют и их степень больше 0
+        while (currentMonomial != null) {
+            if (currentDegree == currentMonomial.degree) {
+                // Если степень текущего монома равна текущей степени, увеличиваем результат
+                result += currentMonomial.coefficient;
+                // и переходим к следующему моному
+                currentMonomial = currentMonomial.nextMonomial;
             }
-            if (st != 0)
-                result *= x;                                      // умножаем на значение в точке и умеьшаем степень
-            st--;
+            if (currentDegree != 0) {
+                // Умножаем результат на x (если степень не равна 0) и уменьшаем степень
+                result *= x;
+                currentDegree--;
+            }
         }
-        if (st > 0) {                                         // если осталась степень
-            for (int i = 0; i < st; i++) {
+
+        // Если еще остались степени (при погрешностях в данных), умножаем результат на x для каждой оставшейся степени
+        if (currentDegree > 0) {
+            for (int i = 0; i < currentDegree; i++) {
                 result *= x;
             }
         }
-        if (cur != null) {                                    // если свободный член полинома существует, повышаем сумму
-            result += cur.coefficient;
+
+        // Если свободный член полинома существует, увеличиваем сумму на его значение
+        if (currentMonomial != null) {
+            result += currentMonomial.coefficient;
         }
+
+        // Возвращаем вычисленное значение полинома в точке x
         return result;
     }
 
 
-    public void print() {           //вывод полинома
-        Monomial curMonomial = head;        // curMonom - текущий моном, изачально равный первому моному полинома
-        if (head == null)           // если первый моном нулевой, то выходим
+    /**
+     * Вывод полинома в формате "коэффициент * x^степень".
+     */
+    public void print() {
+        Monomial curMonomial = head; // Указатель на текущий моном, изначально равен первому моному полинома
+        if (head == null) {
+            // Если первый моном нулевой (полином пуст), прекращаем вывод
             return;
-        System.out.printf("%15.6E", head.coefficient);               // выводим коэффициент первого элемента
-        System.out.print("*x^" + head.degree);                  // выводим степень первого элемента
-        curMonomial = curMonomial.nextMonomial;                             // двигаем моном по полиному (переходим к следующему)
-        while (curMonomial != null) {                            // пока полином не закончился
-            if (curMonomial.coefficient < 0) {                             // если коэффициент отрицательный, то выводим -коэффициент + степень
+        }
+        // Выводим коэффициент и степень первого монома
+        System.out.printf("%15.6E", head.coefficient);
+        System.out.print("*x^" + head.degree);
+        curMonomial = curMonomial.nextMonomial; // Переходим к следующему моному
+        // Продолжаем для остальных мономов полинома
+        while (curMonomial != null) {
+            if (curMonomial.coefficient < 0) {
+                // Если коэффициент отрицательный, выводим его как есть
                 System.out.printf("%15.6E", curMonomial.coefficient);
                 System.out.print("*x^" + curMonomial.degree);
-            } else {                                           // если коэффициент положительный, то выводим +коэффициент + степень
+            } else {
+                // Если коэффициент положительный, выводим его с плюсом
                 System.out.print(" +");
                 System.out.printf("%15.6E", curMonomial.coefficient);
                 System.out.print("*x^" + curMonomial.degree);
             }
-            curMonomial = curMonomial.nextMonomial;                         // двигаем моном по полиному
+            curMonomial = curMonomial.nextMonomial; // Переходим к следующему моному
         }
     }
 
-
-    public void changeBin(double k) {                         // изменение бинома по коэффициенту к
-        Monomial cur = head;                                     // текущий моном полинома
-        if (cur == null) {                                    // если моном нулевой, то вставляем в голову х (монов с коэффициентом 1 и степенью 1)
-            head = new Monomial(1, 1);                     // следующий за ним моном - свободный член к
+    /**
+     * Изменение бинома по коэффициенту k.
+     *
+     * @param k коэффициент, на который изменяем бином
+     */
+    public void changeBin(double k) {
+        Monomial cur = head; // Указатель на текущий моном, изначально равен первому моному полинома
+        if (cur == null) {
+            // Если текущий моном нулевой, вставляем в голову новый моном со степенью 1 и коэффициентом 1,
+            // затем добавляем свободный член с коэффициентом k
+            head = new Monomial(1, 1);
             head.nextMonomial = new Monomial(0, k);
-        } else {                                                // если текущий полином существует, то следующий за ним моном - свободный член к
+        } else {
+            // Если текущий моном существует, переходим к следующему и обновляем его коэффициент на k
             cur = cur.nextMonomial;
             cur.coefficient = k;
         }
     }
+
 }

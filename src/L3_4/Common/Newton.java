@@ -43,9 +43,9 @@ public class Newton {
             Polynom curPolynom = new Polynom(0, 1);
             for (int j = 0; j < i; j++) {
                 curBin.changeBin(-grid.getX(j));
-                curPolynom = curPolynom.multiple(curBin);
+                curPolynom = curPolynom.multiply(curBin);
             }
-            curPolynom.multipleK(differences[i]);
+            curPolynom.multipleByCoefficient(differences[i]);
             newton.sum(curPolynom);
         }
     }

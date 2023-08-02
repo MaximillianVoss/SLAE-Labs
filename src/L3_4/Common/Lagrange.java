@@ -28,18 +28,18 @@ public class Lagrange {
                 temp /= (grid.getX(i) - grid.getX(j));
                 Polynom curBin = new Polynom();
                 curBin.changeBin(-grid.getX(j));
-                curPolynom = curPolynom.multiple(curBin);
+                curPolynom = curPolynom.multiply(curBin);
             }
 
             for (int j = i + 1; j < grid.getCount(); j++) {
                 temp /= (grid.getX(i) - grid.getX(j));
                 Polynom curBin = new Polynom();
                 curBin.changeBin(-grid.getX(j));
-                curPolynom = curPolynom.multiple(curBin);
+                curPolynom = curPolynom.multiply(curBin);
             }
 
             // Умножаем текущий полином на коэффициент и добавляем к полиному Лагранжа
-            curPolynom.multipleK(temp);
+            curPolynom.multipleByCoefficient(temp);
             polynom.sum(curPolynom);
         }
     }

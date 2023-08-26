@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         // Создание объекта матрицы
         try {
-            Matrix matrix = new Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L2\\input2.txt");
+            Matrix matrix = new Matrix("C:\\Users\\FossW\\IdeaProjects\\SLAE Labs\\src\\L2\\input3.txt");
             System.out.println("Исходная матрица:");
             // Вывод исходной матрицы на экран
             matrix.Print();

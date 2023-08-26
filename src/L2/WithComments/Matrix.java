@@ -66,7 +66,12 @@ public class Matrix {
                     sum += array[i][j] * previousApproximation[j];
                 }
             }
-            newApproximation[i] = (array[i][array[0].length - 1] - sum) / array[i][i];
+            if (Math.abs(array[i][i]) < epsilon) {
+                // Обработка исключительной ситуации или присваивание некоторого значения по умолчанию
+            } else {
+                newApproximation[i] = (array[i][array[0].length - 1] - sum) / array[i][i];
+            }
+
         }
         return newApproximation;
     }

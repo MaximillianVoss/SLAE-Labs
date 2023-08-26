@@ -62,12 +62,9 @@ public class Matrix {
     public Results MakeTriangle() {
         for (int iteration = 0; iteration < rowAmount; iteration++) {
             boolean swapResult = SwapFirstNotZeroLine(iteration); // Обмен текущей строки с первой строкой, в которой не нулевой элемент
+
             if (!swapResult) {
-                if (IsZeroElement(matrixArray[iteration][columnAmount - 1])) {
-                    return Results.INFINITE_SOLUTIONS; // Система имеет бесконечное количество решений
-                } else {
-                    return Results.NO_SOLUTIONS; // Система не имеет решений
-                }
+                return Results.DEGENERATE_SYSTEM; // Система вырожденная
             }
 
             if (Math.abs(matrixArray[iteration][iteration]) < this.epsilon) {
@@ -81,22 +78,20 @@ public class Matrix {
             RecalculateCoefficients(iteration, iteration); // Пересчет коэффициентов для приведения матрицы к треугольному виду
         }
 
-        // Проверка после приведения к треугольному виду
+        // Проверка на наличие 0 на диагонали после приведения к треугольному виду
         for (int i = 0; i < rowAmount; i++) {
-            boolean allZeros = true;
-            for (int j = 0; j < columnAmount - 1; j++) {
-                if (Math.abs(matrixArray[i][j]) > this.epsilon) {
-                    allZeros = false; // Проверка, является ли строка нулевой
-                    break;
+            if (IsZeroElement(matrixArray[i][i])) {
+                if (IsZeroElement(matrixArray[i][columnAmount - 1])) {
+                    return Results.INFINITE_SOLUTIONS; // Система имеет бесконечное количество решений
+                } else {
+                    return Results.NO_SOLUTIONS; // Система не имеет решений
                 }
-            }
-            if (allZeros && Math.abs(matrixArray[i][columnAmount - 1]) > this.epsilon) {
-                return Results.NO_SOLUTIONS; // Система не имеет решений
             }
         }
 
         return Results.SINGLE_SOLUTION; // Система имеет единственное решение
     }
+
 
     private void RecalculateCoefficients(int row, int iteration) {
         double diagElement = matrixArray[iteration][iteration]; // Диагональный элемент
